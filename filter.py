@@ -16,5 +16,7 @@ with open("./wordlist2.txt", "w") as f3:
                 if first[i] == second[j]:
                     isDiff = False
                 j += 1
-            f3.write(first[i] + "\n")
-            break
+            if isDiff:
+                f3.write(first[i] + "\n")
+                break
+            
