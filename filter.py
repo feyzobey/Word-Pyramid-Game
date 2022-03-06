@@ -10,9 +10,9 @@ with open("./wordlist.txt", "r") as f1, open("./filteredWords2.txt", "r") as f2:
             second.append(word2)
     
 with open("./wordlist2.txt", "w") as f3:
-        for i in range(len(first)):
-            for j in range(len(second)):
-                while j < len(first):
-                    if first[i] == second[j]:
-                        break
-                f3.write(first[i])
+    for i in range(len(first)):
+        for j in range(len(second)):
+            while j < len(first):
+                if first[i] == second[j]:
+                    break
+            f3.write(first[i])
