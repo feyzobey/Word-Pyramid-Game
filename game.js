@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 
-let myArray = fs.readFileSync('./filteredWords.txt', 'utf8').split('\n')
+let myArray = fs.readFileSync('./allWords-EN.txt', 'utf8').split('\n')
 
 export const digit_3_Words = []
 export const digit_4_Words = []
@@ -27,10 +27,13 @@ export function digitCheck() {
         }
     })
 }
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max)
+}
 
 export function Game() {
-    console.log(word.digit_3_Words[getRandomInt(word.digit_3_Words.length)])
-    console.log(word.digit_4_Words[getRandomInt(word.digit_4_Words.length)])
-    console.log(word.digit_5_Words[getRandomInt(word.digit_5_Words.length)])
-    console.log(word.digit_6_Words[getRandomInt(word.digit_6_Words.length)])
+    console.log(digit_3_Words[getRandomInt(digit_3_Words.length)])
+    console.log(digit_4_Words[getRandomInt(digit_4_Words.length)])
+    console.log(digit_5_Words[getRandomInt(digit_5_Words.length)])
+    console.log(digit_6_Words[getRandomInt(digit_6_Words.length)])
 }
