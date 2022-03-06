@@ -1,11 +1,11 @@
 import * as fs from 'fs'
 
-let myArray = fs.readFileSync('20k.txt', 'utf8').split('\n')
-myArray = myArray.filter(len => !(len < 3 || len > 5))
+let myArray = fs.readFileSync('./filteredWords.txt', 'utf8').split('\n')
 
 export const digit_3_Words = []
 export const digit_4_Words = []
 export const digit_5_Words = []
+
 export function digitCheck() {
     myArray.forEach(element => {
         if (element.match(" ") === null) {
@@ -22,4 +22,10 @@ export function digitCheck() {
             }
         }
     })
+}
+
+export function Game() {
+    console.log(word.digit_3_Words[getRandomInt(word.digit_3_Words.length)])
+    console.log(word.digit_4_Words[getRandomInt(word.digit_4_Words.length)])
+    console.log(word.digit_5_Words[getRandomInt(word.digit_5_Words.length)])
 }
