@@ -7,6 +7,7 @@ const app = express()
 app.use(morgan("dev"))
 app.set("view engine", "ejs")
 app.listen(3000, () => console.log("server is listening"))
+
 app.get("/", (req, res) => {
     game.digitCheck()
     game.Game()

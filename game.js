@@ -1,6 +1,9 @@
 import * as fs from 'fs'
-
-let myArray = fs.readFileSync('./allWords-EN.txt', 'utf8').split('\n')
+let myArray = []
+fs.readFile('./allWords-EN.txt', (err, data) => {
+    if(err) throw err;
+    myArray = data.toString().replace(/\r\n/g,'\n').split('\n')
+})
 
 export const digit_3_Words = []
 export const digit_4_Words = []
@@ -32,6 +35,11 @@ function getRandomInt(max) {
 }
 
 export function Game() {
+    console.log(digit_6_Words)
+    console.log(digit_5_Words)
+    console.log(digit_4_Words)
+    console.log(digit_3_Words)
+     
     console.log(digit_3_Words[getRandomInt(digit_3_Words.length)])
     console.log(digit_4_Words[getRandomInt(digit_4_Words.length)])
     console.log(digit_5_Words[getRandomInt(digit_5_Words.length)])
