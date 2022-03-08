@@ -7,7 +7,7 @@ nav {
   border-bottom: 1px solid #2c2c2c; 
 }
 
-nav .title{
+nav #title{
   color: #ffffff;
   margin-top: auto;
   font-size: 30px;
@@ -66,6 +66,12 @@ span {
 .key__delete {
   width: auto;
 }
+
+section {
+  color: #ffffff;
+  max-width: 1500px;
+  margin: 40px auto;
+}
 /* nav ul {
   display: flex; 
   flex-direction: row;
@@ -74,11 +80,8 @@ span {
 nav ul li {
   margin-right: 30px;
 }  */
-/* section {
-  max-width: 1500px;
-  margin: 40px auto;
-}
-input{
+
+/*input{
   width: 250px;
   padding: 5px;
   height: auto;

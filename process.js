@@ -1,5 +1,6 @@
-import { digit_3_Words, digit_5_Words, digit_4_Words, digit_6_Words, digitCheck } from "./game.js"
-import { JSDOM } from "jsdom";
+import { Game } from "./game.js"
 
+import { JSDOM } from "jsdom"
+export const randoms = new Game()
 const dom = new JSDOM(``, { src: "./keyboard.ejs" })
-console.log(dom.window.document.querySelector(".row"))
+console.log(dom.window.document.querySelector("div.row.key"))
