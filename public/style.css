@@ -1,6 +1,8 @@
 nav {
   align-content: center;
   display: flex;
+  margin: 0;
+  padding: 0;
   justify-content: space-around;
   border-bottom: 1px solid #2c2c2c; 
 }
@@ -9,8 +11,7 @@ nav .title{
   color: #ffffff;
   margin-top: auto;
   font-size: 30px;
-  margin: 0;
-  padding: 0;
+  
 }
 
 :root {

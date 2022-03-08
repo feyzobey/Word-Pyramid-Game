@@ -1,4 +1,5 @@
 import * as fs from 'fs'
+// import { elements } from "./process.js";
 //converting txt file to array 
 let myArray = []
 fs.readFile('./allWords-EN.txt', (err, data) => {
@@ -6,10 +7,10 @@ fs.readFile('./allWords-EN.txt', (err, data) => {
     myArray = data.toString().replace(/\r\n/g,'\n').split('\n')
 })
 
-const digit_3_Words = []
-const digit_4_Words = []
-const digit_5_Words = []
-const digit_6_Words = []
+export const digit_3_Words = []
+export const digit_4_Words = []
+export const digit_5_Words = []
+export const digit_6_Words = []
 
 export function digitCheck() {
     myArray.forEach(element => {
@@ -40,4 +41,5 @@ export function Game() {
     console.log(digit_4_Words[getRandomInt(digit_4_Words.length)])
     console.log(digit_5_Words[getRandomInt(digit_5_Words.length)])
     console.log(digit_6_Words[getRandomInt(digit_6_Words.length)])
+    // console.log(elements)
 }
