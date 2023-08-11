@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css">
 
     <style>
         body {
@@ -70,10 +71,12 @@
         <button id="start-button" onclick="startGame()">Start Game</button>
         <div id="pyramid"></div>
         <button id="submit-button" onclick="checkAnswers()" disabled>Submit</button>
+        <span id="attemps" style="display: none;">Attemps left: <span id="attemps-count">10</span></span>
     </div>
 
     <script>
         let words = [];
+        let attemps = 10;
         let word3;
         let word4;
         let word5;
@@ -154,7 +157,7 @@
                     }
                 });
             });
-
+            document.getElementById('attemps').style.display = 'block';
             document.getElementById('start-button').style.display = 'none';
             document.getElementById('submit-button').style.display = 'block';
         }
@@ -173,6 +176,20 @@
         }
 
         function checkAnswers() {
+            document.getElementById('attemps-count').innerText = --attemps;
+            if (attemps === 0) {
+                Swal.fire({
+                    title: 'You lost!',
+                    text: 'You have no more attemps left!',
+                    icon: 'error',
+                    confirmButtonText: 'Try again'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
+                })
+                return;
+            }
             let counter = 0;
             const correctWordList = { 3: word3, 4: word4, 5: word5, 6: word6, 7: word7 };
             for (let i = 3; i <= 7; i++) {
@@ -191,12 +208,24 @@
                 }
             }
             if (counter === word3.length + word4.length + word5.length + word6.length + word7.length) {
-                alert('You won!');
+                Swal.fire({
+                    title: 'You won!',
+                    text: 'You have found all the words!',
+                    icon: 'success',
+                    confirmButtonText: 'Play again'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
+                })
             }
 
             console.log(word3, word4, word5, word6, word7);
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="sweetalert2.all.min.js"></script>
+    <script src="sweetalert2.min.js"></script>
 </body>
 
 </html>
