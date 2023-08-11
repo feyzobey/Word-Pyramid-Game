@@ -1,3 +1,29 @@
+
+# word_list = words.words()
+# three_char_words = [word for word in word_list if len(word) == 3]
+# four_char_words = [word for word in word_list if len(word) == 4]
+# five_char_words = [word for word in word_list if len(word) == 5]
+# six_char_words = [word for word in word_list if len(word) == 6]
+# seven_char_words = [word for word in word_list if len(word) == 7]
+
+# # Randomly select words from each list
+# def generate_random_word(word_list, count):
+#     return random.sample(word_list, count)
+
+# three_char_random = generate_random_word(three_char_words, 500)
+# four_char_random = generate_random_word(four_char_words, 500)
+# five_char_random = generate_random_word(five_char_words, 500)
+# six_char_random = generate_random_word(six_char_words, 500)
+# seven_char_random = generate_random_word(seven_char_words, 500)
+
+# # Print the generated words
+# print("3-character words:", three_char_random)
+# print("4-character words:", four_char_random)
+# print("5-character words:", five_char_random)
+# print("6-character words:", six_char_random)
+# print("7-character words:", seven_char_random)
+
+
 # first = []
 # second = []
 

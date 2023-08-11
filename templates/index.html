@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #game-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .word-box {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ccc;
+            margin: 0 5px;
+            text-align: center;
+            line-height: 30px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .word-box:focus {
+            outline: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #submit-button {
+            margin-top: 10px;
+            display: none;
+        }
+
+        #submit-button:disabled {
+            background-color: gray;
+        }
+    </style>
+    <title>Word Pyramid Game</title>
+</head>
+
+<body>
+    <div id="game-container">
+        <h1>Word Pyramid Game</h1>
+        <p>Find words with lengths 3, 4, 5, 6 and 7 respectively:</p>
+        <button id="start-button" onclick="startGame()">Start Game</button>
+        <div id="pyramid"></div>
+        <button id="submit-button" onclick="checkAnswers()" disabled>Submit</button>
+    </div>
+
+    <script>
+        let words = [];
+        let word3;
+        let word4;
+        let word5;
+        let word6;
+        let word7;
+
+        $(document).ready(function () {
+            fetch('/static/words.txt')
+                .then(res => res.text())
+                .then(text => {
+                    words.push(...text.split('\n'));
+                    words = words.map(word => word.replace('\r', '').trim());
+                })
+                .catch(e => console.error(e));
+
+        });
+
+        function getRandomWord(length) {
+            const matchingWords = words.filter(word => word.length === length);
+            const randomIndex = Math.floor(Math.random() * matchingWords.length);
+            return matchingWords[randomIndex];
+        }
+
+        function createWordBox(word) {
+            return word.split('').map(() => `<input id="wordlength${word.length}" class="word-box" type="text" maxlength="1">`).join('');
+        }
+
+        function startGame() {
+            const pyramidContainer = document.getElementById('pyramid');
+            pyramidContainer.innerHTML = '';
+
+            word3 = getRandomWord(3);
+            word4 = getRandomWord(4);
+            word5 = getRandomWord(5);
+            word6 = getRandomWord(6);
+            word7 = getRandomWord(7);
+
+            const pyramidText = `
+                <p>${createWordBox(word3)}</p>
+                <p>${createWordBox(word4)}</p>
+                <p>${createWordBox(word5)}</p>
+                <p>${createWordBox(word6)}</p>
+                <p>${createWordBox(word7)}</p>
+            `;
+            pyramidContainer.innerHTML = pyramidText;
+
+            const boxes = document.querySelectorAll('.word-box');
+
+            boxes.forEach(box => {
+                box.addEventListener('input', () => {
+                    box.value = box.value.replace(/[^a-zA-Z]/g, ''); // Allow only letters
+                    updateSubmitButton();
+                });
+            });
+
+            // on input event focus and select if box is filled next input box if current box is filled with a letter 
+            boxes.forEach((box, index) => {
+                box.addEventListener('input', () => {
+                    if (box.value.length === 1) {
+                        if (index < boxes.length - 1) {
+                            boxes[index + 1].focus();
+                            boxes[index + 1].select();
+                        }
+                    }
+                });
+            });
+
+            // on backspace event focus and select if box is filled previous input box if current box is empty
+            boxes.forEach((box, index) => {
+                box.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace') {
+                        if (box.value.length === 0) {
+                            if (index > 0) {
+                                boxes[index - 1].focus();
+                                boxes[index - 1].select();
+                            }
+                        }
+                    }
+                });
+            });
+
+            document.getElementById('start-button').style.display = 'none';
+            document.getElementById('submit-button').style.display = 'block';
+        }
+
+
+        function updateSubmitButton() {
+            let boxes = document.querySelectorAll('.word-box');
+            let count = Array.from(boxes).filter(box => box.value.length === 1).length;
+            const isDisabled = count !== word7.length + word6.length + word5.length + word4.length + word3.length;
+            const submitButton = document.getElementById('submit-button');
+            if (isDisabled) {
+                submitButton.disabled = true;
+            } else {
+                submitButton.disabled = false;
+            }
+        }
+
+        function checkAnswers() {
+            let counter = 0;
+            const correctWordList = { 3: word3, 4: word4, 5: word5, 6: word6, 7: word7 };
+            for (let i = 3; i <= 7; i++) {
+                let currentWord = correctWordList[i];
+                for (let j = 0; j < i; j++) {
+                    const currentBox = $(`#wordlength${i}:nth-child(${j + 1})`);
+                    const currentValue = currentBox.val();
+                    if (currentValue === currentWord.charAt(j)) {
+                        currentBox.css('background-color', 'green');
+                        counter++;
+                    } else if (currentWord.indexOf(currentValue) > -1) {
+                        currentBox.css('background-color', 'yellow');
+                    } else {
+                        currentBox.css('background-color', 'red');
+                    }
+                }
+            }
+            if (counter === word3.length + word4.length + word5.length + word6.length + word7.length) {
+                alert('You won!');
+            }
+
+            console.log(word3, word4, word5, word6, word7);
+        }
+    </script>
+</body>
+
+</html>
