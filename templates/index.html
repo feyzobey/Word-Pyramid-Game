@@ -57,7 +57,43 @@
             display: none;
         }
 
+        #undo-button {
+            margin-top: 10px;
+            display: none;
+        }
+
+        #give-up-button {
+            margin-top: 10px;
+            display: none;
+        }
+
+        #redo-button {
+            margin-top: 10px;
+            display: none;
+        }
+
+        #try-again-button {
+            margin-top: 10px;
+            display: none;
+        }
+
+        #try-again-button:disabled {
+            background-color: gray;
+        }
+
+        #redo-button:disabled {
+            background-color: gray;
+        }
+
         #submit-button:disabled {
+            background-color: gray;
+        }
+
+        #give-up-button:disabled {
+            background-color: gray;
+        }
+
+        #undo-button:disabled {
             background-color: gray;
         }
     </style>
@@ -68,15 +104,21 @@
     <div id="game-container">
         <h1>Word Pyramid Game</h1>
         <p>Find words with lengths 3, 4, 5, 6 and 7 respectively:</p>
-        <button id="start-button" onclick="startGame()">Start Game</button>
+        <div id="start-page">
+            <button id="start-button" onclick="startGame()">Start Game</button>
+        </div>
         <div id="pyramid"></div>
+        <button id="undo-button" onclick="undoLastInput()" disabled>Undo</button>
+        <!-- <button id="redo-button" onclick="redoLastInput()" disabled>Redo</button> -->
+        <button id="give-up-button" onclick="giveUp()">Give Up</button>
         <button id="submit-button" onclick="checkAnswers()" disabled>Submit</button>
-        <span id="attemps" style="display: none;">Attemps left: <span id="attemps-count">10</span></span>
+        <button id="try-again-button">Try Again</button>
+        <span id="attemps" style="display: none;">Attemps left: <span id="attemps-count">20</span></span>
     </div>
 
     <script>
         let words = [];
-        let attemps = 10;
+        let attemps = document.getElementById('attemps-count').innerText;
         let word3;
         let word4;
         let word5;
@@ -91,8 +133,68 @@
                     words = words.map(word => word.replace('\r', '').trim());
                 })
                 .catch(e => console.error(e));
-
         });
+
+        let undoHistory = [];
+        //let redoHistory = [];
+//
+        //function redoLastInput() {
+        //    const currentLetters = getAllLetters();
+        //    undoHistory.push(redoHistory.pop());
+        //    if (redoHistory.length > 0) {
+        //        const lastInput = redoHistory.slice(-1)[0].split('');
+        //        const boxes = document.querySelectorAll('.word-box');
+//
+        //        boxes.forEach(box => {
+        //            box.value = lastInput.shift();
+        //        });
+        //        checkAnswers(false, true, currentLetters);
+        //    }
+        //}
+
+        function undoLastInput() {
+            const currentLetters = getAllLetters();
+            undoHistory.pop();
+            if (undoHistory.length > 0) {
+                const lastInput = undoHistory.slice(-1)[0].split('');
+                const boxes = document.querySelectorAll('.word-box');
+
+                boxes.forEach(box => {
+                    box.value = lastInput.shift();
+                });
+                checkAnswers(true, currentLetters);
+                document.getElementById('attemps-count').innerText = attemps += 2;
+            }
+        }
+
+        function giveUp() {
+            const correctWordList = { 3: word3, 4: word4, 5: word5, 6: word6, 7: word7 };
+            for (let i = 3; i <= 7; i++) {
+                const currentWord = correctWordList[i];
+                for (let j = 0; j < i; j++) {
+                    const currentBox = $(`#wordlength${i}:nth-child(${j + 1})`);
+                    currentBox.val(currentWord.charAt(j));
+                    currentBox.css('background-color', 'gray');
+                }
+            }
+            document.getElementById('give-up-button').disabled = true;
+            document.getElementById('submit-button').disabled = true;
+            document.getElementById('undo-button').disabled = true;
+        }
+
+        function getAllLetters() {
+            const boxes = document.querySelectorAll('.word-box');
+            let letters = '';
+
+            boxes.forEach(box => {
+                const letter = box.value.toLowerCase();
+                if (letter.match(/[a-z]/)) {
+                    letters += letter;
+                }
+            });
+
+            return letters;
+        }
 
         function getRandomWord(length) {
             const matchingWords = words.filter(word => word.length === length);
@@ -106,6 +208,20 @@
 
         function startGame() {
             const pyramidContainer = document.getElementById('pyramid');
+            document.getElementById('undo-button').style.display = 'block';
+            //document.getElementById('redo-button').style.display = 'block';
+            document.getElementById('give-up-button').style.display = 'block';
+            document.getElementById('attemps').style.display = 'block';
+            document.getElementById('start-button').style.display = 'none';
+            document.getElementById('try-again-button').style.display = 'block';
+            const tryAgainButton = document.getElementById('try-again-button');
+
+            tryAgainButton.addEventListener("click", () => {
+                location.reload();
+            });
+            
+            const submitButton = document.getElementById('submit-button');
+            submitButton.style.display = 'block';
             pyramidContainer.innerHTML = '';
 
             word3 = getRandomWord(3);
@@ -124,6 +240,15 @@
             pyramidContainer.innerHTML = pyramidText;
 
             const boxes = document.querySelectorAll('.word-box');
+            boxes[0].focus();
+
+            boxes.forEach(box => {
+                box.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !submitButton.disabled) {
+                        checkAnswers();
+                    }
+                });
+            });
 
             boxes.forEach(box => {
                 box.addEventListener('input', () => {
@@ -157,11 +282,7 @@
                     }
                 });
             });
-            document.getElementById('attemps').style.display = 'block';
-            document.getElementById('start-button').style.display = 'none';
-            document.getElementById('submit-button').style.display = 'block';
         }
-
 
         function updateSubmitButton() {
             let boxes = document.querySelectorAll('.word-box');
@@ -175,8 +296,29 @@
             }
         }
 
-        function checkAnswers() {
+        function checkAnswers(isUndo = false, letters = getAllLetters()) {
+            if (undoHistory.includes(letters)) {
+                return;
+            }
             document.getElementById('attemps-count').innerText = --attemps;
+            const undoButton = document.getElementById('undo-button');
+            //const redoButton = document.getElementById('redo-button');
+            const boxes = document.querySelectorAll('.word-box');
+            if (!isUndo) {
+                undoHistory.push(letters);
+            } 
+            if (undoHistory.length > 1) {
+                undoButton.disabled = false;
+            } else {
+                undoButton.disabled = true;
+            }
+
+            //if (redoHistory.length > 0) {
+            //    redoButton.disabled = false;
+            //} else {
+            //    redoButton.disabled = true;
+            //}
+
             if (attemps === 0) {
                 Swal.fire({
                     title: 'You lost!',
@@ -190,6 +332,8 @@
                 })
                 return;
             }
+            boxes[0].focus();
+            boxes[0].select();
             let counter = 0;
             const correctWordList = { 3: word3, 4: word4, 5: word5, 6: word6, 7: word7 };
             for (let i = 3; i <= 7; i++) {
@@ -197,16 +341,17 @@
                 for (let j = 0; j < i; j++) {
                     const currentBox = $(`#wordlength${i}:nth-child(${j + 1})`);
                     const currentValue = currentBox.val();
-                    if (currentValue === currentWord.charAt(j)) {
+                    if (currentValue.toLowerCase() === currentWord.charAt(j)) {
                         currentBox.css('background-color', 'green');
                         counter++;
-                    } else if (currentWord.indexOf(currentValue) > -1) {
+                    } else if (currentWord.indexOf(currentValue.toLowerCase()) > -1) {
                         currentBox.css('background-color', 'yellow');
                     } else {
                         currentBox.css('background-color', 'red');
                     }
                 }
             }
+
             if (counter === word3.length + word4.length + word5.length + word6.length + word7.length) {
                 Swal.fire({
                     title: 'You won!',
@@ -219,8 +364,6 @@
                     }
                 })
             }
-
-            console.log(word3, word4, word5, word6, word7);
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
